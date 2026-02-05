@@ -1,0 +1,27 @@
+name: Daily Astro Update
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install skyfield
+      - name: Run calculation
+        run: python calc_astro.py
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'AstroBot'
+          git config --global user.email 'bot@github.com'
+          git add astro_data.json
+          git commit -m "Update astro data" || exit 0
+          git push
